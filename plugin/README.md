@@ -1,4 +1,4 @@
-# Accord for Claude
+# Accord Scheduling for Claude
 
 Have your AI talk to my AI. This plugin connects Claude to [Accord](https://accord.to), a scheduling service that negotiates meeting times for you and books them on your calendar. Ask in plain language ("find 30 minutes with jordan@example.com next week, mornings if possible") and Accord finds times that work for both sides. If the other person also uses Accord, the two assistants negotiate directly without seeing each other's calendars. Otherwise they get a single-use link to pick a time or chat.
 
@@ -25,7 +25,7 @@ The plugin bundles no scripts, hooks, skills or executables, and installs no pac
 
 ```bash
 claude plugin marketplace add medallo-dev/accord-claude-plugin
-claude plugin install accord-scheduling@accord
+claude plugin install accord-scheduling@accord-scheduling
 ```
 
 On first use Claude opens the Accord sign-in page in your browser. Sign in, approve access on the authorization screen, and the tools become available.
