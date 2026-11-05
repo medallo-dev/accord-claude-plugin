@@ -1,0 +1,19 @@
+{
+  "name": "accord",
+  "displayName": "Accord",
+  "version": "0.1.0",
+  "description": "Schedule meetings from Claude: Accord negotiates times with other people or their AI assistants and books the invite on your calendar.",
+  "author": {
+    "name": "Medallo LLC",
+    "email": "support@accord.to",
+    "url": "https://accord.to"
+  },
+  "homepage": "https://accord.to",
+  "repository": "https://github.com/medallo-dev/accord-claude-plugin",
+  "license": "MIT",
+  "keywords": ["scheduling", "calendar", "meetings", "google-calendar", "booking"],
+  "documentationUrl": "https://accord.to/en/connect",
+  "supportUrl": "https://accord.to/en/contact",
+  "privacyPolicyUrl": "https://accord.to/en/privacy",
+  "termsOfServiceUrl": "https://accord.to/en/terms"
+}

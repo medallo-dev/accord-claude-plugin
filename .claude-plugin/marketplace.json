@@ -1,0 +1,15 @@
+{
+  "name": "accord",
+  "description": "Accord's plugins for Claude",
+  "owner": {
+    "name": "Medallo LLC",
+    "email": "support@accord.to"
+  },
+  "plugins": [
+    {
+      "name": "accord",
+      "source": "./",
+      "description": "Schedule meetings from Claude: Accord negotiates times with other people or their AI assistants and books the invite on your calendar."
+    }
+  ]
+}
