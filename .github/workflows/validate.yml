@@ -14,6 +14,11 @@ concurrency:
   group: validate-${{ github.ref }}
   cancel-in-progress: true
 
+# The plugin is plugin/ (what the directory scans and users install); this
+# workflow and the marketplace file sit outside it on purpose.
+env:
+  PLUGIN_DIR: plugin
+
 jobs:
   validate:
     name: validate
@@ -23,6 +28,7 @@ jobs:
       - uses: actions/checkout@v5
         with:
           fetch-depth: 0
+          persist-credentials: false
 
       - uses: actions/setup-node@v5
         with:
@@ -36,6 +42,7 @@ jobs:
       - name: claude plugin validate --strict
         run: |
           claude --version
+          claude plugin validate --strict "$PLUGIN_DIR"
           claude plugin validate --strict .
 
       # Directory rules the CLI reports only as warnings (or not at all).
@@ -44,9 +51,10 @@ jobs:
         run: |
           set -euo pipefail
           fail() { echo "::error::$1"; exit 1; }
+          manifest="$PLUGIN_DIR/.claude-plugin/plugin.json"
 
           # Icon: square PNG, 512-2048 px, under 2 MB.
-          icon=".claude-plugin/icon.png"
+          icon="$PLUGIN_DIR/.claude-plugin/icon.png"
           [ -f "$icon" ] || fail "$icon is missing"
           info=$(file -b "$icon")
           [[ "$info" =~ ^PNG\ image\ data,\ ([0-9]+)\ x\ ([0-9]+) ]] || fail "$icon is not a PNG: $info"
@@ -54,29 +62,35 @@ jobs:
           [ "$w" = "$h" ] || fail "$icon must be square (is ${w}x${h})"
           { [ "$w" -ge 512 ] && [ "$w" -le 2048 ]; } || fail "$icon must be 512-2048 px (is ${w})"
           [ "$(stat -c %s "$icon")" -lt 2097152 ] || fail "$icon must be under 2 MB"
-          jq -e '.icon == "./.claude-plugin/icon.png"' .claude-plugin/plugin.json >/dev/null \
+          jq -e '.icon == "./.claude-plugin/icon.png"' "$manifest" >/dev/null \
             || fail "plugin.json icon must be ./.claude-plugin/icon.png"
 
           # README: at least 40 words outside code blocks.
-          words=$(awk '/^```/{c=!c; next} !c' README.md | wc -w)
-          [ "$words" -ge 40 ] || fail "README.md needs at least 40 words outside code blocks (has $words)"
+          words=$(awk '/^```/{c=!c; next} !c' "$PLUGIN_DIR/README.md" | wc -w)
+          [ "$words" -ge 40 ] || fail "$PLUGIN_DIR/README.md needs at least 40 words outside code blocks (has $words)"
 
           # License, required metadata, listing URLs over https.
-          [ -f LICENSE ] || fail "LICENSE is missing"
-          jq -e '.version and .description and .author.name and .license' .claude-plugin/plugin.json >/dev/null \
+          [ -f "$PLUGIN_DIR/LICENSE" ] || fail "$PLUGIN_DIR/LICENSE is missing"
+          jq -e '.version and .description and .author.name and .license' "$manifest" >/dev/null \
             || fail "plugin.json needs version, description, author.name and license"
           for key in homepage documentationUrl supportUrl privacyPolicyUrl termsOfServiceUrl; do
-            jq -e --arg k "$key" '.[$k] | startswith("https://")' .claude-plugin/plugin.json >/dev/null \
+            jq -e --arg k "$key" '.[$k] | startswith("https://")' "$manifest" >/dev/null \
               || fail "plugin.json $key must be an https:// URL"
           done
 
-          # Marketplace entry name matches the manifest name.
-          [ "$(jq -r .name .claude-plugin/plugin.json)" = "$(jq -r '.plugins[0].name' .claude-plugin/marketplace.json)" ] \
+          # The marketplace entry points at plugin/ under the manifest's name.
+          jq -e --arg dir "./$PLUGIN_DIR" '.plugins | length == 1 and .[0].source == $dir' .claude-plugin/marketplace.json >/dev/null \
+            || fail "marketplace.json must list one plugin with source ./$PLUGIN_DIR"
+          [ "$(jq -r .name "$manifest")" = "$(jq -r '.plugins[0].name' .claude-plugin/marketplace.json)" ] \
             || fail "marketplace.json entry name must equal plugin.json name"
 
           # Remote MCP servers only, over https, without credentials in headers.
-          jq -e '.mcpServers | to_entries | all(.value.type == "http" and (.value.url | startswith("https://")) and (.value.headers == null))' .mcp.json >/dev/null \
+          jq -e '.mcpServers | to_entries | all(.value.type == "http" and (.value.url | startswith("https://")) and (.value.headers == null))' "$PLUGIN_DIR/.mcp.json" >/dev/null \
             || fail ".mcp.json servers must be type http with an https:// url and no headers"
+
+          # Nothing outside the connector config, manifest, icon, README and license.
+          extra=$(git ls-files "$PLUGIN_DIR" | grep -v -x -E "$PLUGIN_DIR/(\.claude-plugin/(plugin\.json|icon\.png)|\.mcp\.json|README\.md|LICENSE)" || true)
+          [ -z "$extra" ] || fail "unexpected files in $PLUGIN_DIR/ (update this check if intended): $extra"
 
           # Files the directory refuses.
           bad=$(git ls-files | grep -E '(^|/)(\.DS_Store|Thumbs\.db|desktop\.ini|__MACOSX)(/|$)' || true)
@@ -89,18 +103,22 @@ jobs:
       - name: Version bumped
         if: github.event_name == 'pull_request'
         shell: bash
+        env:
+          BASE_REF: ${{ github.base_ref }}
         run: |
           set -euo pipefail
-          base="origin/${{ github.base_ref }}"
-          changed=$(git diff --name-only "$base"...HEAD -- . ':(exclude).github' ':(exclude).gitignore')
+          base="origin/$BASE_REF"
+          manifest="$PLUGIN_DIR/.claude-plugin/plugin.json"
+          changed=$(git diff --name-only "$base"...HEAD -- "$PLUGIN_DIR")
           if [ -z "$changed" ]; then
-            echo "Only CI files changed; no version bump needed"
+            echo "No plugin files changed; no version bump needed"
             exit 0
           fi
-          old=$(git show "$base:.claude-plugin/plugin.json" | jq -r .version)
-          new=$(jq -r .version .claude-plugin/plugin.json)
+          # Before the move to plugin/, the manifest was at the repository root.
+          old=$( { git show "$base:$manifest" 2>/dev/null || git show "$base:.claude-plugin/plugin.json"; } | jq -r .version)
+          new=$(jq -r .version "$manifest")
           if [ "$old" = "$new" ]; then
-            echo "::error::Plugin files changed but .claude-plugin/plugin.json version is still $old. Bump it."
+            echo "::error::Plugin files changed but $manifest version is still $old. Bump it."
             echo "$changed"
             exit 1
           fi

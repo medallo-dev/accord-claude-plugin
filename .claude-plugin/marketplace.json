@@ -5,10 +5,13 @@
     "name": "Medallo LLC",
     "email": "support@accord.to"
   },
+  "renames": {
+    "accord": "accord-scheduling"
+  },
   "plugins": [
     {
-      "name": "accord",
-      "source": "./",
+      "name": "accord-scheduling",
+      "source": "./plugin",
       "description": "Schedule meetings from Claude: Accord negotiates times with other people or their AI assistants and books the invite on your calendar."
     }
   ]
