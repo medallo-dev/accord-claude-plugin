@@ -1,4 +1,4 @@
-# Accord for Claude
+# Accord Scheduling for Claude
 
 **Have your AI talk to my AI.** Accord schedules meetings for you from Claude: it negotiates times with other people or their AI assistants and books the invite on your Google Calendar.
 
@@ -44,7 +44,7 @@ Ask in plain language, for example "find 30 minutes with jordan@example.com next
 
 ```bash
 claude plugin marketplace add medallo-dev/accord-claude-plugin
-claude plugin install accord-scheduling@accord
+claude plugin install accord-scheduling@accord-scheduling
 ```
 
 The first time you use it, Claude opens the Accord sign-in page in your browser. Sign in and approve access, and the tools become available.
@@ -91,7 +91,7 @@ Each provider processes data only to provide its service to Accord. Accord does 
 | A meeting wasn't booked automatically | Auto-booking needs Pro or the trial, and requests from new contacts always wait for your decision. |
 | The other person heard nothing | If they don't use Accord, send them the single-use link yourself. |
 
-**Disconnecting**: remove the connector in Claude's settings, or in Claude Code run `claude plugin uninstall accord-scheduling@accord`. This ends Claude's access and keeps your Accord account. To revoke Google Calendar access too, disconnect your calendar in Accord. Accord then revokes its Google access and deletes the busy times it cached.
+**Disconnecting**: remove the connector in Claude's settings, or in Claude Code run `claude plugin uninstall accord-scheduling@accord-scheduling`. This ends Claude's access and keeps your Accord account. To revoke Google Calendar access too, disconnect your calendar in Accord. Accord then revokes its Google access and deletes the busy times it cached.
 
 ## Documentation and support
 

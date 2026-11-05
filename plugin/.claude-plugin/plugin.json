@@ -1,7 +1,7 @@
 {
   "name": "accord-scheduling",
-  "displayName": "Accord",
-  "version": "0.2.1",
+  "displayName": "Accord Scheduling",
+  "version": "0.2.2",
   "description": "Schedule meetings from Claude: Accord negotiates times with other people or their AI assistants and books the invite on your calendar.",
   "author": {
     "name": "Medallo LLC",

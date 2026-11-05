@@ -1,6 +1,6 @@
 {
-  "name": "accord",
-  "description": "Accord's plugins for Claude",
+  "name": "accord-scheduling",
+  "description": "Accord Scheduling plugins for Claude, from Medallo LLC",
   "owner": {
     "name": "Medallo LLC",
     "email": "support@accord.to"
