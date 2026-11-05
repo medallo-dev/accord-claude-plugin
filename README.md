@@ -30,6 +30,8 @@ claude plugin install accord@accord
 
 On first use Claude opens the Accord sign-in page in your browser. Sign in, approve access on the authorization screen, and the tools become available.
 
+Full documentation (every tool, autonomy levels, troubleshooting, disconnecting): https://accord.to/en/docs
+
 ## What you can do
 
 - Set your scheduling preferences in plain language, review the summary, then confirm it
