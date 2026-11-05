@@ -15,6 +15,12 @@ Ask in plain language, for example "find 30 minutes with jordan@example.com next
 - **Choose your autonomy level**: book automatically, ask you first, or only propose
 - **Manage your account**: claim a public handle page, email settings and billing
 
+### You stay in control
+
+- **Nothing is booked without your OK by default.** New accounts start on "Ask me before booking": Accord may negotiate, but it books only after you accept the exact time. "Book automatically" is opt-in and needs Pro.
+- **Requests from people you've never met always wait for you**, unless you set a level for that person.
+- **Payment never happens in Claude.** Upgrading to Pro opens Stripe's hosted checkout page, where you complete the payment yourself.
+
 ### Try asking
 
 > Set my scheduling preferences: no meetings before 9:30, never on Fridays, 15 minutes between calls.
@@ -68,15 +74,30 @@ To provide the service, Accord's server shares data with these providers:
 | **Supabase** | Database and authentication | Your Accord account and scheduling data. |
 | **Vercel** | Hosting | Requests to Accord, including tool calls from Claude. |
 
-Each provider processes data only to provide its service to Accord. Text from other people, such as meeting subjects and names, is returned to Claude as data, not instructions.
+Each provider processes data only to provide its service to Accord. Accord does not sell personal data or use it for advertising, and it does not read your Claude conversations, memory or files. Text from other people, such as meeting subjects and names, is returned to Claude as data, not instructions.
+
+**Retention**: Accord keeps account data while your account is active and deletes assistant-connection logs after 30 days. Deleting your account, under Preferences or by asking Claude, removes your data as described in the privacy policy.
 
 - Privacy policy: https://accord.to/en/privacy
 - Terms of service: https://accord.to/en/terms
 
+## Troubleshooting
+
+| Problem | Fix |
+| --- | --- |
+| Sign-in fails or the connector won't connect | Remove the connector, add it again, sign in to Accord and select **Approve**. |
+| Claude doesn't use the Accord tools | Turn the connector on for the chat from the tools menu, or name Accord in your request. |
+| "Calendar isn't connected" | Ask Claude to connect your calendar, or connect Google Calendar under **Calendar** in Accord. |
+| A meeting wasn't booked automatically | Auto-booking needs Pro or the trial, and requests from new contacts always wait for your decision. |
+| The other person heard nothing | If they don't use Accord, send them the single-use link yourself. |
+
+**Disconnecting**: remove the connector in Claude's settings, or in Claude Code run `claude plugin uninstall accord-scheduling@accord`. This ends Claude's access and keeps your Accord account. To revoke Google Calendar access too, disconnect your calendar in Accord. Accord then revokes its Google access and deletes the busy times it cached.
+
 ## Documentation and support
 
-- Docs (every tool, autonomy levels, troubleshooting, disconnecting): https://accord.to/en/docs
+- Docs (every tool, autonomy levels, troubleshooting): https://accord.to/en/docs
 - Support: support@accord.to or https://accord.to/en/contact
+- Security issues: email support@accord.to with "Security" in the subject
 
 ## License
 
